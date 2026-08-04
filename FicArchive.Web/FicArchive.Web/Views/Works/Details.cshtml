@@ -1,0 +1,32 @@
+@model FicArchive.Web.Models.Work
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h1>@Model.Title</h1>
+<h5 class="text-muted">by @Model.AuthorName</h5>
+<p class="lead">@Model.Summary</p>
+<p><small class="text-muted">Published: @Model.CreatedAt.ToString("MM/dd/yyyy")</small></p>
+
+<hr />
+
+<h3>Chapters</h3>
+
+@if (Model.Chapters.Count == 0)
+{
+    <p>No chapters yet.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var chapter in Model.Chapters.OrderBy(c => c.ChapterNumber))
+        {
+            <li class="list-group-item">
+                <a asp-controller="Works" asp-action="Read" asp-route-id="@chapter.Id">
+                    Chapter @chapter.ChapterNumber. @chapter.Title
+                </a>
+            </li>
+        }
+    </ul>
+}

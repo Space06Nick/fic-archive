@@ -1,0 +1,15 @@
+@model FicArchive.Web.Models.Chapter
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<p>
+    <a asp-controller="Works" asp-action="Details" asp-route-id="@Model.WorkId">← @Model.Work?.Title</a>
+</p>
+
+<h2>Chapter @Model.ChapterNumber. @Model.Title</h2>
+
+<div class="mt-4" style="white-space: pre-line;">
+    @Model.Content
+</div>

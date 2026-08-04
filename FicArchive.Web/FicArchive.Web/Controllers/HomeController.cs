@@ -1,14 +1,24 @@
 using FicArchive.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using FicArchive.Web.Data;
+using FicArchive.Web.Models;
 
 namespace FicArchive.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly AppDbContext _db;
+
+        public HomeController(AppDbContext db)
+        {
+            _db = db;
+        }
+
         public IActionResult Index()
         {
-            return View();
+            var works = _db.Works.ToList();
+            return View(works);
         }
 
         public IActionResult Privacy()

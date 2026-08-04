@@ -1,19 +1,31 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using FicArchive.Web.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.WebHost.UseStaticWebAssets();
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=FicArchive.db"));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
@@ -22,8 +34,58 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+
+    if (!db.Works.Any())
+    {
+        db.Works.Add(new FicArchive.Web.Models.Work
+        {
+            Title = "The First Story on FicArchive",
+            Summary = "This is a test story to show how the site works.",
+            AuthorName = "Space06Nick",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        db.Works.Add(new FicArchive.Web.Models.Work
+        {
+            Title = "Adventures in Space",
+            Summary = "Science fiction about a journey to distant stars.",
+            AuthorName = "Space06Nick",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        db.SaveChanges();
+    }
+
+    if (!db.Chapters.Any() && db.Works.Any())
+    {
+        var work = db.Works.First();
+
+        db.Chapters.Add(new FicArchive.Web.Models.Chapter
+        {
+            WorkId = work.Id,
+            ChapterNumber = 1,
+            Title = "The Beginning of the Journey",
+            Content = "It was a dark night when the hero first opened the door to the archive.\n\nSomeday the real text of your first story will live here."
+        });
+
+        db.Chapters.Add(new FicArchive.Web.Models.Chapter
+        {
+            WorkId = work.Id,
+            ChapterNumber = 2,
+            Title = "First Steps",
+            Content = "The hero took the first step and understood there was no turning back.\n\nThousands of pages lay ahead."
+        });
+
+        db.SaveChanges();
+    }
+}
 
 app.Run();
