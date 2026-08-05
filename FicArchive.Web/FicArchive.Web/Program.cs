@@ -4,7 +4,7 @@ using FicArchive.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Читаем user-secrets (чтобы приложение видело Email:Login и Email:AppPassword)
+// Читаем user-secrets (на будущее, когда подключим подтверждение почты)
 builder.Configuration.AddUserSecrets(System.Reflection.Assembly.GetExecutingAssembly(), optional: true);
 
 builder.WebHost.UseStaticWebAssets();
@@ -17,14 +17,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
-    // Вход только после подтверждения почты
-    options.SignIn.RequireConfirmedAccount = true;
+    // TODO: вернуть true, когда настроим отправку писем для подтверждения аккаунта
+    options.SignIn.RequireConfirmedAccount = false;
 })
     .AddDefaultUI()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// Отправитель писем (подтверждение почты, сброс пароля)
+// Отправитель писем (на будущее: подтверждение почты, сброс пароля)
 builder.Services.AddTransient<IEmailSender<IdentityUser>, FicArchive.Web.Services.EmailSender>();
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, FicArchive.Web.Services.EmailSender>();
 

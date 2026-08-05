@@ -14,14 +14,40 @@ namespace FicArchive.Web.Services
             _config = config;
         }
 
-        private Task SendAsync(string to, string subject, string html)
+        private async Task SendAsync(string to, string subject, string html)
         {
-            var client = new SmtpClient("smtp.gmail.com", 587)
+            var login = _config["Email:Login"];
+            var pass = _config["Email:AppPassword"];
+
+            Console.WriteLine($"[EmailSender] from={login}, pass length={pass?.Length}, to={to}");
+
+            try
             {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(_config["Email:Login"], _config["Email:AppPassword"])
-            };
-            return client.SendMailAsync(_config["Email:Login"], to, subject, html);
+                using var client = new SmtpClient("smtp.gmail.com", 587)
+                {
+                    EnableSsl = true,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(login, pass),
+                    Timeout = 15000
+                };
+
+                var message = new MailMessage
+                {
+                    From = new MailAddress(login!),
+                    Subject = subject,
+                    Body = html,
+                    IsBodyHtml = true
+                };
+                message.To.Add(to);
+
+                await client.SendMailAsync(message);
+                Console.WriteLine("[EmailSender] OK: SMTP принял письмо без ошибок");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[EmailSender] FAIL: {ex.GetType().Name}: {ex.Message}");
+                throw;
+            }
         }
 
         Task IEmailSender.SendEmailAsync(string email, string subject, string htmlMessage)
