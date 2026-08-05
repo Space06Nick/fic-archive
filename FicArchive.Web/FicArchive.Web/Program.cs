@@ -4,6 +4,9 @@ using FicArchive.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Читаем user-secrets (чтобы приложение видело Email:Login и Email:AppPassword)
+builder.Configuration.AddUserSecrets(System.Reflection.Assembly.GetExecutingAssembly(), optional: true);
+
 builder.WebHost.UseStaticWebAssets();
 
 builder.Services.AddControllersWithViews();
@@ -12,9 +15,18 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=FicArchive.db"));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    // Вход только после подтверждения почты
+    options.SignIn.RequireConfirmedAccount = true;
+})
+    .AddDefaultUI()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+// Отправитель писем (подтверждение почты, сброс пароля)
+builder.Services.AddTransient<IEmailSender<IdentityUser>, FicArchive.Web.Services.EmailSender>();
+builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, FicArchive.Web.Services.EmailSender>();
 
 var app = builder.Build();
 
