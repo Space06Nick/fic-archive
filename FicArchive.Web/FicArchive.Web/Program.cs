@@ -54,50 +54,6 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
-
-    if (!db.Works.Any())
-    {
-        db.Works.Add(new FicArchive.Web.Models.Work
-        {
-            Title = "The First Story on FicArchive",
-            Summary = "This is a test story to show how the site works.",
-            AuthorName = "Space06Nick",
-            CreatedAt = DateTime.UtcNow
-        });
-
-        db.Works.Add(new FicArchive.Web.Models.Work
-        {
-            Title = "Adventures in Space",
-            Summary = "Science fiction about a journey to distant stars.",
-            AuthorName = "Space06Nick",
-            CreatedAt = DateTime.UtcNow
-        });
-
-        db.SaveChanges();
-    }
-
-    if (!db.Chapters.Any() && db.Works.Any())
-    {
-        var work = db.Works.First();
-
-        db.Chapters.Add(new FicArchive.Web.Models.Chapter
-        {
-            WorkId = work.Id,
-            ChapterNumber = 1,
-            Title = "The Beginning of the Journey",
-            Content = "It was a dark night when the hero first opened the door to the archive.\n\nSomeday the real text of your first story will live here."
-        });
-
-        db.Chapters.Add(new FicArchive.Web.Models.Chapter
-        {
-            WorkId = work.Id,
-            ChapterNumber = 2,
-            Title = "First Steps",
-            Content = "The hero took the first step and understood there was no turning back.\n\nThousands of pages lay ahead."
-        });
-
-        db.SaveChanges();
-    }
 }
 
 app.Run();

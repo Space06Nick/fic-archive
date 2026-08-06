@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+<h1>My Dashboard</h1>
+<p>Hi, @User.Identity!.Name! Welcome to your personal page.</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">My Works</h5>
+                <p class="card-text">Your stories: view, create and add chapters.</p>
+                <a asp-action="Works" class="btn btn-primary">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">My History</h5>
+                <p class="card-text">Stories you have been reading.</p>
+                <a asp-action="History" class="btn btn-secondary">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">My Preferences</h5>
+                <p class="card-text">Settings of your account.</p>
+                <a asp-action="Preferences" class="btn btn-secondary">Open</a>
+            </div>
+        </div>
+    </div>
+</div>

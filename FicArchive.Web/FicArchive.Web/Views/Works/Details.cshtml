@@ -1,32 +1,66 @@
 @model FicArchive.Web.Models.Work
-
 @{
     ViewData["Title"] = Model.Title;
+    var isOwner = User.Identity != null && User.Identity.IsAuthenticated && User.Identity.Name == Model.AuthorName;
+    var wordCount = Model.Chapters.Sum(c => c.Content.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length);
 }
 
-<h1>@Model.Title</h1>
-<h5 class="text-muted">by @Model.AuthorName</h5>
-<p class="lead">@Model.Summary</p>
-<p><small class="text-muted">Published: @Model.CreatedAt.ToString("MM/dd/yyyy")</small></p>
+<div class="mb-3">
+    @if (isOwner)
+    {
+        <a asp-area="" asp-controller="Dashboard" asp-action="AddChapter" asp-route-workId="@Model.Id" class="btn btn-sm btn-primary">Add Chapter</a>
+    }
+    @if (Model.Chapters.Any())
+    {
+        <a asp-action="Read" asp-route-id="@Model.Id" asp-route-chapter="1" class="btn btn-sm btn-success">Read</a>
+    }
+    <a href="#chapters" class="btn btn-sm btn-secondary">Chapter Index</a>
+</div>
 
-<hr />
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-1"><b>Rating:</b> @Model.Rating</p>
+                <p class="mb-1"><b>Fandoms:</b> @Model.Fandoms</p>
+                <p class="mb-1"><b>Categories:</b> @(string.IsNullOrEmpty(Model.Category) ? "—" : Model.Category)</p>
+                <p class="mb-1"><b>Relationships:</b> @(string.IsNullOrEmpty(Model.Relationships) ? "—" : Model.Relationships)</p>
+                <p class="mb-1"><b>Characters:</b> @(string.IsNullOrEmpty(Model.Characters) ? "—" : Model.Characters)</p>
+                <p class="mb-0"><b>Additional Tags:</b> @(string.IsNullOrEmpty(Model.AdditionalTags) ? "—" : Model.AdditionalTags)</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><b>Published:</b> @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+                <p class="mb-1"><b>Words:</b> @wordCount</p>
+                <p class="mb-1"><b>Chapters:</b> @Model.Chapters.Count</p>
+                <p class="mb-0"><b>Author:</b> @Model.AuthorName</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h3>Chapters</h3>
+<h2 class="text-center">@Model.Title</h2>
+<h5 class="text-center text-muted mb-4">@Model.AuthorName</h5>
 
-@if (Model.Chapters.Count == 0)
+@if (!string.IsNullOrEmpty(Model.Summary))
 {
-    <p>No chapters yet.</p>
+    <div class="card mb-4">
+        <div class="card-header"><b>Summary:</b></div>
+        <div class="card-body">
+            <p class="mb-0">@Model.Summary</p>
+        </div>
+    </div>
 }
-else
-{
-    <ul class="list-group">
-        @foreach (var chapter in Model.Chapters.OrderBy(c => c.ChapterNumber))
+
+<div id="chapters" class="card">
+    <div class="card-header"><b>Chapters</b></div>
+    <ul class="list-group list-group-flush">
+        @foreach (var chapter in Model.Chapters)
         {
             <li class="list-group-item">
-                <a asp-controller="Works" asp-action="Read" asp-route-id="@chapter.Id">
-                    Chapter @chapter.ChapterNumber. @chapter.Title
+                <a asp-action="Read" asp-route-id="@Model.Id" asp-route-chapter="@chapter.ChapterNumber">
+                    @chapter.ChapterNumber. @chapter.Title
                 </a>
             </li>
         }
     </ul>
-}
+</div>

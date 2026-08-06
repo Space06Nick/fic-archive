@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FicArchive.Web.Data;
-using FicArchive.Web.Models;
 
 namespace FicArchive.Web.Controllers
 {
@@ -14,34 +13,40 @@ namespace FicArchive.Web.Controllers
             _db = db;
         }
 
-        // Страница истории со списком глав
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Index()
         {
-            var work = _db.Works
-                .Include(w => w.Chapters)
-                .FirstOrDefault(w => w.Id == id);
+            var works = await _db.Works
+                .OrderByDescending(w => w.CreatedAt)
+                .ToListAsync();
+            return View(works);
+        }
 
-            if (work == null)
-            {
-                return NotFound();
-            }
+        public async Task<IActionResult> Details(int id)
+        {
+            var work = await _db.Works
+                .Include(w => w.Chapters.OrderBy(c => c.ChapterNumber))
+                .FirstOrDefaultAsync(w => w.Id == id);
+
+            if (work == null) return NotFound();
 
             return View(work);
         }
 
-        // Страница чтения главы
-        public IActionResult Read(int id)
+        public async Task<IActionResult> Read(int id, int chapter = 1)
         {
-            var chapter = _db.Chapters
-                .Include(c => c.Work)
-                .FirstOrDefault(c => c.Id == id);
+            var work = await _db.Works
+                .Include(w => w.Chapters.OrderBy(c => c.ChapterNumber))
+                .FirstOrDefaultAsync(w => w.Id == id);
 
-            if (chapter == null)
-            {
-                return NotFound();
-            }
+            if (work == null) return NotFound();
 
-            return View(chapter);
+            var current = work.Chapters.FirstOrDefault(c => c.ChapterNumber == chapter)
+                          ?? work.Chapters.FirstOrDefault();
+
+            if (current == null) return NotFound();
+
+            ViewData["Chapter"] = current;
+            return View(work);
         }
     }
 }

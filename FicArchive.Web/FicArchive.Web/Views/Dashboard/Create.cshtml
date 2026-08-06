@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Post New Work";
+}
+
+<h1>Post New Work</h1>
+<p class="text-danger">* Required information</p>
+
+<form method="post" asp-action="Create">
+
+    <div class="card mb-4">
+        <div class="card-header"><b>Tags</b></div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Rating</label>
+                <select name="rating" class="form-select">
+                    <option>Not Rated</option>
+                    <option>General Audiences</option>
+                    <option>Teen And Up Audiences</option>
+                    <option>Mature</option>
+                    <option>Explicit</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-danger">Fandoms*</label>
+                <input type="text" name="fandoms" class="form-control" placeholder="Trolls, Harry Potter, Naruto..." />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Categories</label>
+                <select name="category" class="form-select">
+                    <option value=""></option>
+                    <option>Gen</option>
+                    <option>F/F</option>
+                    <option>F/M</option>
+                    <option>M/M</option>
+                    <option>Multi</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Relationships</label>
+                <input type="text" name="relationships" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Characters</label>
+                <input type="text" name="characters" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Additional Tags</label>
+                <input type="text" name="additionalTags" class="form-control" placeholder="Angst, Fluff, Hurt/Comfort..." />
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><b>Preface</b></div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label text-danger">Work Title*</label>
+                <input type="text" name="title" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Summary</label>
+                <textarea name="summary" class="form-control" rows="4"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><b>Work Text*</b></div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Chapter title (optional)</label>
+                <input type="text" name="chapterTitle" class="form-control" />
+            </div>
+            <textarea name="content" class="form-control" rows="14" required></textarea>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Post Work</button>
+    <a asp-action="Works" class="btn btn-secondary">Cancel</a>
+</form>

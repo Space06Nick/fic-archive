@@ -1,0 +1,35 @@
+﻿@model List<FicArchive.Web.Models.Work>
+@{
+    ViewData["Title"] = "My Works";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>My Works</h1>
+    <a asp-action="Create" class="btn btn-success">+ Post New Work</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <p>You haven't published any stories yet. Press "+ Post New Work" to write your first one!</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var work in Model)
+        {
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a asp-area="" asp-controller="Works" asp-action="Details" asp-route-id="@work.Id">@work.Title</a>
+                        </h5>
+                        <p class="card-text"><small class="text-muted">@work.Rating | @work.Fandoms</small></p>
+                        <p class="card-text">@work.Summary</p>
+                        <p class="card-text"><small class="text-muted">Published: @work.CreatedAt.ToString("dd.MM.yyyy")</small></p>
+                        <a asp-action="AddChapter" asp-route-workId="@work.Id" class="btn btn-sm btn-primary">Add Chapter</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

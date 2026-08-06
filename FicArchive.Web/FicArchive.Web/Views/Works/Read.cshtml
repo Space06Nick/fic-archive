@@ -1,15 +1,36 @@
-@model FicArchive.Web.Models.Chapter
-
+@model FicArchive.Web.Models.Work
 @{
-    ViewData["Title"] = Model.Title;
+    var chapter = (FicArchive.Web.Models.Chapter)ViewData["Chapter"]!;
+    ViewData["Title"] = Model.Title + " - " + chapter.Title;
+    var prev = Model.Chapters.LastOrDefault(c => c.ChapterNumber < chapter.ChapterNumber);
+    var next = Model.Chapters.FirstOrDefault(c => c.ChapterNumber > chapter.ChapterNumber);
 }
 
-<p>
-    <a asp-controller="Works" asp-action="Details" asp-route-id="@Model.WorkId">← @Model.Work?.Title</a>
-</p>
+<h2 class="text-center">@Model.Title</h2>
+<h5 class="text-center text-muted mb-4">@chapter.Title</h5>
+<hr />
 
-<h2>Chapter @Model.ChapterNumber. @Model.Title</h2>
+<div class="mb-5" style="white-space: pre-line;">@chapter.Content</div>
 
-<div class="mt-4" style="white-space: pre-line;">
-    @Model.Content
+<hr />
+<div class="d-flex justify-content-between align-items-center">
+    @if (prev != null)
+    {
+        <a asp-action="Read" asp-route-id="@Model.Id" asp-route-chapter="@prev.ChapterNumber" class="btn btn-secondary">← Previous Chapter</a>
+    }
+    else
+    {
+        <span></span>
+    }
+
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-light border">Chapter Index</a>
+
+    @if (next != null)
+    {
+        <a asp-action="Read" asp-route-id="@Model.Id" asp-route-chapter="@next.ChapterNumber" class="btn btn-secondary">Next Chapter →</a>
+    }
+    else
+    {
+        <span></span>
+    }
 </div>
